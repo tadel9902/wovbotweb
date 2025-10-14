@@ -66,6 +66,10 @@
       <!-- Kết quả sẽ render vào đây -->
       <div id="resultBox"></div>
     </section>
-    <script src="app-obfuscated.js"></script>
+    <script>
+      // Khi deploy production (VD: AWS hoặc domain thật)
+      window.__API_BASE__ = "https://wovbot.online";
+    </script>
+    <script src="app.obf.js"></script>
   </body>
 </html>
