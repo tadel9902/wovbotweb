@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Somedieyoung's Web</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <div class="logo">SOMEDIEYOUNG</div>
+      <nav>
+        <ul>
+          <li><a href="#">Giới Thiệu</a></li>
+          <li><a href="#">Bot Discord</a></li>
+          <li><a href="#">Sản Phẩm</a></li>
+          <li><a href="#">Liên Hệ</a></li>
+        </ul>
+      </nav>
+      <div class="auth-buttons">
+        <button class="btn btn-login">Đăng nhập</button>
+        <button class="btn btn-register">Đăng ký</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <h1 class="hero-title">Chào mừng đến với Somedieyoung's Web</h1>
+      <h3 class="fade">Tiện ích tra cứu lịch sử tên và Skip Quest Clan</h3>
+
+      <!-- Search Box -->
+      <div class="search-box fade">
+        <div class="tab-container">
+          <div
+            class="tab active"
+            data-placeholder="Nhập Username"
+            data-type="username"
+          >
+            <i class="fa-solid fa-user"></i> Username
+          </div>
+          <div
+            class="tab"
+            data-placeholder="Nhập Old Username "
+            data-type="oldusername"
+          >
+            <i class="fa-solid fa-clock-rotate-left"></i> Old Username
+          </div>
+        </div>
+
+        <div class="input-group">
+          <input type="text" id="searchInput" placeholder="Nhập Username" />
+          <button class="btn-apply">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Kết quả sẽ render vào đây -->
+      <div id="resultBox"></div>
+    </section>
+    <script src="app-obfuscated.js"></script>
+  </body>
+</html>
