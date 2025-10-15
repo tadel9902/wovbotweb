@@ -33,71 +33,96 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Xử lý tìm kiếm
-  document.querySelector(".btn-apply").addEventListener("click", async () => {
-    const query = searchInput.value.trim();
-    if (!query || query.length < 3) {
-      alert("Vui lòng nhập ít nhất 3 ký tự.");
-      return;
-    }
+ async function handleSearch() {
+  const query = searchInput.value.trim();
+  if (!query || query.length < 3) {
+    alert("Vui lòng nhập ít nhất 3 ký tự.");
+    return;
+  }
 
-    try {
-      if (activeSearchType === "username") {
-        const res = await safeFetch(`${API_BASE}/api/user/search?username=${encodeURIComponent(query)}`);
-        if (!res) { alert('Không thể kết nối tới API'); return; }
-        if (res.error) { alert(res.error); return; }
-        const { player, history } = res;
-        renderCharacterCard(player, history);
-      } else if (activeSearchType === "oldusername") {
-        const res = await safeFetch(`${API_BASE}/api/user/search-old?query=${encodeURIComponent(query)}`);
-        if (!res) { alert('Không thể kết nối tới API'); return; }
-        if (res.error) { alert(res.error); return; }
+  try {
+    if (activeSearchType === "username") {
+      const res = await safeFetch(`${API_BASE}/api/user/search?username=${encodeURIComponent(query)}`);
+      if (!res) { alert('Không thể kết nối tới API'); return; }
+      if (res.error) { alert(res.error); return; }
+      const { player, history } = res;
+      renderCharacterCard(player, history);
+    } else if (activeSearchType === "oldusername") {
+      const res = await safeFetch(`${API_BASE}/api/user/search-old?query=${encodeURIComponent(query)}`);
+      if (!res) { alert('Không thể kết nối tới API'); return; }
+      if (res.error) { alert(res.error); return; }
 
-        const users = res.users || [];
-        if (users.length === 0) {
-          alert("Không tìm thấy người dùng với Old Username này.");
-        } else if (users.length === 1) {
-          // Nếu chỉ 1 kết quả: lấy chi tiết từ API theo ID (đảm bảo luôn lấy thông tin mới nhất)
-          const u = users[0];
-          const detail = await fetchUserDetailById(u.user_id);
-          if (detail && detail.player) {
-            renderCharacterCard(detail.player, detail.history);
-          } else {
-            // fallback: render DB data nếu API lỗi
-            renderCharacterCard({ id: u.user_id, username: u.username }, u.history);
-          }
+      const users = res.users || [];
+      if (users.length === 0) {
+        alert("Không tìm thấy người dùng với Old Username này.");
+      } else if (users.length === 1) {
+        const u = users[0];
+        const detail = await fetchUserDetailById(u.user_id);
+        if (detail && detail.player) {
+          renderCharacterCard(detail.player, detail.history);
         } else {
-          renderUserList(users, query);
+          renderCharacterCard({ id: u.user_id, username: u.username }, u.history);
         }
       } else {
-        alert("Loại tìm kiếm không hợp lệ.");
+        renderUserList(users, query);
       }
-    } catch (err) {
-      console.error("Lỗi khi gọi API:", err);
-      alert("Không thể tìm thấy người dùng.");
+    } else {
+      alert("Loại tìm kiếm không hợp lệ.");
     }
-  });
+  } catch (err) {
+    console.error("Lỗi khi gọi API:", err);
+    alert("Không thể tìm thấy người dùng.");
+  }
+}
+document.querySelector(".btn-apply").addEventListener("click", handleSearch);
+
+document.addEventListener("keydown", (event) => {
+  const active = document.activeElement;
+  if (active && active.id === "searchInput" && event.key === "Enter") {
+    event.preventDefault();
+    handleSearch();
+  }
+});
+
 });
 
 // Hàm fetch an toàn với timeout và JSON parse
-async function safeFetch(url, { timeout = 8000 } = {}) {
+async function safeFetch(url, { timeout = 10000 } = {}) {
   const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), timeout);
+  const id = setTimeout(() => {
+    controller.abort();
+    console.warn('⏱️ Request aborted due to timeout:', url);
+  }, timeout);
+
   try {
-    const res = await fetch(url, { signal: controller.signal, credentials: 'same-origin', headers: { Accept: 'application/json' } });
+    const res = await fetch(url, {
+      signal: controller.signal,
+      credentials: 'same-origin',
+      headers: { Accept: 'application/json' }
+    });
+
     clearTimeout(id);
+
     if (!res.ok) {
-      // trả về JSON lỗi nếu có, hoặc null
       try {
         const j = await res.json();
         return j;
       } catch (e) {
+        console.warn('⚠️ Response not JSON:', res.status);
         return null;
       }
     }
+
     return await res.json();
   } catch (err) {
     clearTimeout(id);
-    console.error('safeFetch error', err);
+
+    if (err.name === 'AbortError') {
+      console.warn('❌ Fetch aborted:', url);
+    } else {
+      console.error('❌ Fetch failed:', err.message);
+    }
+
     return null;
   }
 }
@@ -135,6 +160,7 @@ function safeDisplay(val) {
 
 function renderUserList(users, oldName) {
   const resultBox = document.getElementById("resultBox");
+  localStorage.setItem("lastUserList", JSON.stringify({ users, oldName }));
   resultBox.innerHTML = `
     <div class="user-list fade show">
       <h3>Tìm thấy ${users.length} người từng dùng "${oldName}"</h3>
@@ -180,15 +206,26 @@ function renderCharacterCard(player, history) {
     : "N/A";
   const now = new Date();
   const formattedNow = now.toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", hour12: false });
+  const savedList = localStorage.getItem("lastUserList");
+  const showBackButton = activeSearchType === "oldusername" && savedList;
+
 
   resultBox.innerHTML = `
+   <div class="card-wrapper ">
+    ${showBackButton ? `
+      <div class="back-button-wrapper">
+        <button id="backToList" class="btn  btn-register">← Quay lại</button>
+      </div>
+    ` : ""}
+
+
     <div class="character-card fade">
       <div class="card-image">
         <img src="${avatar}" class="img-fluid" style="transform: scale(1.15);" alt="${player.username} avatar" />
       </div>
       <div class="card-body">
         <h2 class="card-title py-2">${safeDisplay(player.username)}</h2>
-
+         
         <div class="card-meta d-flex justify-content-evenly py-2">
           <span class="chip">Level ${safeDisplay(player.level)}</span>
           <span class="chip">${safeDisplay(player.status)}</span>
@@ -209,11 +246,26 @@ function renderCharacterCard(player, history) {
         </div>
 
         <div class="card-actions d-flex justify-content-between mt-3">
+         
+
           <div style="font-size:0.85rem;color:rgba(255,255,255,0.85)">Được cấp: Somedieyoung • ${formattedNow}</div>
         </div>
       </div>
     </div>
+    
   `;
+  const backBtn = document.getElementById("backToList");
+if (backBtn) {
+  backBtn.addEventListener("click", () => {
+    const saved = localStorage.getItem("lastUserList");
+    if (saved) {
+      const { users, oldName } = JSON.parse(saved);
+      renderUserList(users, oldName);
+    } else {
+      alert("Không có danh sách nào được lưu.");
+    }
+  });
+}
 
   // Hiệu ứng fade-in
   const card = resultBox.querySelector(".character-card");

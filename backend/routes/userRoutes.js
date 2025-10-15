@@ -64,25 +64,24 @@ router.get("/search-old", async (req, res) => {
     }
 
     // Có trong DB → đồng bộ lại với API
-    const updatedUsers = [];
-    for (const u of userDatas) {
-      try {
-        const apiUser = await fetchPlayerInfo(u.user_id); // by ID
-        const updated = await checkAndUpdateUserName(apiUser.id, apiUser.username);
-        updatedUsers.push({
-          user_id: updated.user_id,
-          username: updated.username,
-          history: { oldusername: updated.oldusername || "" },
-        });
-      } catch (err) {
-        logConciseError("sync oldusername", err);
-        updatedUsers.push({
-          user_id: u.user_id,
-          username: u.username,
-          history: { oldusername: u.oldusername || "" },
-        });
-      }
-    }
+    const updatedUsers = await Promise.all(userDatas.map(async (u) => {
+    try {
+    const apiUser = await fetchPlayerInfo(u.user_id);
+    const updated = await checkAndUpdateUserName(apiUser.id, apiUser.username);
+    return {
+      user_id: updated.user_id,
+      username: updated.username,
+      history: { oldusername: updated.oldusername || "" },
+    };
+    } catch (err) {
+    logConciseError("sync oldusername", err);
+    return {
+      user_id: u.user_id,
+      username: u.username,
+      history: { oldusername: u.oldusername || "" },
+    };
+    } 
+    }));
 
     return res.json({ users: updatedUsers });
   } catch (err) {

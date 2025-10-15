@@ -9,7 +9,7 @@ connectDB();
 
 // ⚙️ CORS — chỉ cho phép domain thật của bạn (không bắt buộc, nhưng an toàn hơn)
 app.use(cors({
-  origin: ["https://wovbot.online", "http://localhost:3000"], // cho dev và production
+  origin: ["https://wovbot.online", "http://localhost:5500","http://127.0.0.1:5500"], // cho dev và production
   credentials: true
 }));
 

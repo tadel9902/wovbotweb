@@ -95,9 +95,9 @@ nav ul li a:hover {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start; /* đẩy nội dung lên trên */
+  justify-content: flex-start;
   text-align: center;
-  padding: 60px 20px 30px; /* tăng top, giảm bottom */
+  padding: 60px 20px 30px;
   gap: 20px;
 }
 
@@ -118,19 +118,21 @@ nav ul li a:hover {
   margin: 15px 0 30px;
 }
 
-.input-group {
-  display: flex;
-  width: 100%;
-  margin-top: 10px;
-}
 .search-box {
   padding: 25px;
   border-radius: 16px;
-  border: none; /* bỏ viền */
-  box-shadow: 0 0 12px rgba(99, 102, 241, 0.3); /* shadow mềm, lan nhẹ */
+  border: none;
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.3);
   background: #1a1c2c;
   width: 500px;
   margin-bottom: 25px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .input-group input {
@@ -143,6 +145,7 @@ nav ul li a:hover {
   font-size: 1rem;
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
+  min-width: 0;
 }
 
 .btn-apply {
@@ -158,10 +161,12 @@ nav ul li a:hover {
   align-items: center;
   justify-content: center;
   transition: background 0.3s ease;
+  flex-shrink: 0;
 }
 .btn-apply:hover {
   background: linear-gradient(135deg, #4f46e5, #7c3aed);
 }
+
 .tab-container {
   position: relative;
   display: flex;
@@ -211,25 +216,6 @@ nav ul li a:hover {
 }
 .tab-container::before {
   transform: translateX(calc(var(--tab-index) * 100%));
-}
-.btn-find {
-  width: 80px;
-  height: 100%;
-  background: linear-gradient(135deg, #ef4444, #f87171);
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  color: #fff;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  transition: transform 0.2s ease, background 0.3s ease;
-}
-.btn-find:hover {
-  background: linear-gradient(135deg, #dc2626, #ef4444);
-  transform: translateY(-2px);
 }
 
 .hero-buttons {
@@ -292,7 +278,7 @@ nav ul li a:hover {
     transform: scale(1);
   }
 }
-/* Card nền giống search box, chữ trắng */
+
 .character-card {
   display: flex;
   flex-direction: column;
@@ -302,22 +288,20 @@ nav ul li a:hover {
   margin: 18px auto;
   overflow: hidden;
   border-radius: 16px;
-  border: none; /* bỏ viền */
+  border: none;
   background: #1a1c2c;
-  box-shadow: 0 0 12px rgba(99, 102, 241, 0.3); /* shadow mềm, lan nhẹ */
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.3);
   transition: transform 180ms ease, box-shadow 180ms ease;
   color: #ffffff;
   font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial;
 }
 
-/* Hover effect */
 .character-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 20px 50px rgba(2, 6, 23, 0.26);
 }
 
-/* Avatar area: giữ trong suốt, nền nhẹ phù hợp với card */
 .card-image {
   width: 100%;
   height: 240px;
@@ -335,7 +319,6 @@ nav ul li a:hover {
   flex-shrink: 0;
 }
 
-/* Khung nhẹ màu bán trong suốt */
 .card-image::after {
   content: "";
   position: absolute;
@@ -345,7 +328,6 @@ nav ul li a:hover {
   pointer-events: none;
 }
 
-/* Ảnh avatar giữ tỷ lệ, drop-shadow nhẹ để nổi trên nền */
 .card-image img {
   max-width: 92%;
   max-height: 92%;
@@ -356,7 +338,6 @@ nav ul li a:hover {
   background: transparent;
 }
 
-/* Nội dung phía dưới nền trong suốt hơn để nổi chữ trắng */
 .card-body {
   padding: 14px 16px;
   flex-grow: 1;
@@ -364,7 +345,6 @@ nav ul li a:hover {
   gap: 16px;
 }
 
-/* Tiêu đề và meta màu trắng, nét nhẹ */
 .card-title {
   margin: 0 0 6px 0;
   font-size: 1.125rem;
@@ -385,7 +365,6 @@ nav ul li a:hover {
   font-size: 0.85rem;
 }
 
-/* Chi tiết text trắng nhẹ */
 .card-details {
   color: rgba(255, 255, 255, 0.95);
   font-size: 0.95rem;
@@ -395,7 +374,6 @@ nav ul li a:hover {
   margin: 6px 0;
 }
 
-/* Nút sao chép và hành động */
 .copy-btn {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.06);
@@ -408,7 +386,6 @@ nav ul li a:hover {
   background: rgba(255, 255, 255, 0.12);
 }
 
-/* Primary action */
 .btn-primary {
   background: rgba(255, 255, 255, 0.12);
   color: #fff;

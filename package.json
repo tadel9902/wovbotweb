@@ -2,9 +2,9 @@
   "name": "web-landing",
   "version": "1.0.0",
   "scripts": {
-    "start": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "nodemon backend/server.js",
-    "client": "live-server frontend"
+    "start": "concurrently \"npm run server\" ",
+    "server": "nodemon backend/server.js"
+    
   },
   "dependencies": {
     "algoliasearch": "^5.40.0",
@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "concurrently": "^9.2.1",
-    "nodemon": "^3.1.10",
-    "live-server": "^1.2.2"
+    "live-server": "^1.2.2",
+    "nodemon": "^3.1.10"
   }
 }
